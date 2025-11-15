@@ -31,8 +31,9 @@ export default function FavoriteCompanies() {
   const { selectedCompany, setSelectedCompany, selectedIds, toggleSelectedId } =
     useFavoriteStore();
   const [page, setPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 1️⃣ 전체 회사명 가져오기
+  // 전체 회사명 가져오기
   const {
     data: companiesData,
     isLoading: isCompaniesLoading,
@@ -45,7 +46,7 @@ export default function FavoriteCompanies() {
     },
   });
 
-  // 2️⃣ 관심기업 목록 가져오기 (페이지네이션)
+  // 관심기업 목록 가져오기
   const {
     data: favoritesData,
     isLoading: isFavoritesLoading,
@@ -60,7 +61,6 @@ export default function FavoriteCompanies() {
     },
   });
 
-  // 3️⃣ 관심기업 삭제
   const handleDelete = async (id: number) => {
     await axiosInstance.delete(`/favorites/${id}`, { data: { email } });
     queryClient.invalidateQueries({ queryKey: ["favorites"] });
@@ -71,22 +71,6 @@ export default function FavoriteCompanies() {
 
   return (
     <div>
-      {/* 상단 메뉴 */}
-      <div className="flex gap-4 mb-4 items-center">
-        <select
-          className="border p-2 rounded"
-          value={selectedCompany}
-          onChange={(e) => setSelectedCompany(e.target.value)}
-        >
-          <option value="">전체 회사</option>
-          {companiesData?.companies.map((name, index) => (
-            <option key={`${name}-${index}`} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
-      </div>
-
       {/* 목록 테이블 */}
       <table className="w-full border border-gray-300">
         <thead className="bg-gray-100">
@@ -104,7 +88,7 @@ export default function FavoriteCompanies() {
                   if (
                     favoritesData.items.every((f) => selectedIds.includes(f.id))
                   ) {
-                    selectedIds.forEach((id) => toggleSelectedId(id)); // 전체 해제
+                    selectedIds.forEach((id) => toggleSelectedId(id));
                   } else {
                     favoritesData.items.forEach((f) => {
                       if (!selectedIds.includes(f.id)) toggleSelectedId(f.id);
@@ -132,8 +116,16 @@ export default function FavoriteCompanies() {
                     onChange={() => toggleSelectedId(item.id)}
                   />
                 </td>
-                <td className="p-2">{item.company_name}</td>
-                <td className="p-2">
+                <td
+                  className="p-2 cursor-pointer"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  {item.company_name}
+                </td>
+                <td
+                  className="p-2 cursor-pointer"
+                  onClick={() => setIsModalOpen(true)}
+                >
                   {new Date(item.created_at).toLocaleString("ko-KR", {
                     year: "numeric",
                     month: "2-digit",
@@ -154,25 +146,97 @@ export default function FavoriteCompanies() {
       </table>
 
       {/* 페이지네이션 */}
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex gap-2 w-full justify-center items-center">
         <button
           disabled={page === 1}
           onClick={() => setPage((prev) => prev - 1)}
           className="px-3 py-1 border rounded disabled:opacity-50"
         >
-          이전
+          &lt; 이전
         </button>
-        <span className="px-3 py-1 border rounded">
-          페이지 {page} / {favoritesData?.total_pages || 1}
-        </span>
+
+        {Array.from(
+          { length: favoritesData?.total_pages || 1 },
+          (_, i) => i + 1
+        )
+          .filter((p) => {
+            if (favoritesData?.total_pages! <= 8) return true;
+            if (p === 1 || p === favoritesData?.total_pages) return true;
+            if (Math.abs(p - page) <= 2) return true;
+            return false;
+          })
+          .map((p, idx, arr) => {
+            if (idx > 0 && p - arr[idx - 1] > 1) {
+              return (
+                <span key={`dots-${p}`} className="px-2">
+                  ...
+                </span>
+              );
+            }
+
+            return (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                className={`px-3 py-1 border rounded ${
+                  p === page ? "bg-black text-white" : ""
+                }`}
+              >
+                {p}
+              </button>
+            );
+          })}
+
         <button
           disabled={page === favoritesData?.total_pages}
           onClick={() => setPage((prev) => prev + 1)}
           className="px-3 py-1 border rounded disabled:opacity-50"
         >
-          다음
+          다음 &gt;
         </button>
       </div>
+
+      {/* 전체 회사 모달 */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white w-96 max-h-[70vh] overflow-y-auto rounded p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold">전체 회사</h2>
+              <button
+                className="text-gray-500 font-bold text-xl"
+                onClick={() => setIsModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <ul className="space-y-2">
+              {companiesData?.companies.map((name, idx) => (
+                <li
+                  key={name + idx}
+                  className={`p-2 rounded cursor-pointer hover:bg-gray-100 ${
+                    selectedCompany === name ? "bg-gray-200 font-semibold" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedCompany(name);
+                    setIsModalOpen(false);
+                  }}
+                >
+                  {name}
+                </li>
+              ))}
+            </ul>
+            <button
+              className="mt-4 w-full px-3 py-2 border rounded text-center"
+              onClick={() => {
+                setSelectedCompany("");
+                setIsModalOpen(false);
+              }}
+            >
+              전체 보기
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
