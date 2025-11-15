@@ -9,6 +9,9 @@ import { Trash } from "lucide-react";
 import axiosInstance from "@/lib/axiosInstance";
 import { useQueryClient } from "@tanstack/react-query";
 
+// 삭제 모달
+import DeleteModal from "@/components/Modal/DeleteModal";
+
 const Main: React.FC = () => {
   const { selectedTask } = useTaskStore();
   const { selectedIds } = useFavoriteStore();
@@ -96,30 +99,11 @@ const Main: React.FC = () => {
 
           {/* 삭제 확인 모달 */}
           {isDeleteModalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded p-6 w-96">
-                <h2 className="text-lg font-bold mb-2">삭제 확인</h2>
-                <p className="mb-4">
-                  총 {selectedIds.length}개 삭제하시겠습니까?
-                  <br />
-                  관심기업 삭제 시 복구할 수 없습니다. 정말 삭제하시겠습니까?
-                </p>
-                <div className="flex justify-end gap-2">
-                  <button
-                    onClick={() => setIsDeleteModalOpen(false)}
-                    className="px-4 py-2 rounded border"
-                  >
-                    취소
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    className="px-4 py-2 rounded bg-red-600 text-white"
-                  >
-                    삭제
-                  </button>
-                </div>
-              </div>
-            </div>
+            <DeleteModal
+              count={selectedIds.length}
+              onClose={() => setIsDeleteModalOpen(false)}
+              onConfirm={handleDelete}
+            />
           )}
 
           {/* 산업 관련 */}

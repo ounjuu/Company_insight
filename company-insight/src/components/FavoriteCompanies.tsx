@@ -10,6 +10,7 @@ import { Trash } from "lucide-react";
 // 모달
 import FavoriteCompanyModal from "./Modal/FavoriteCompanyModal";
 import DetailModal from "./Modal/DetailModal";
+import DeleteModal from "./Modal/DeleteModal";
 
 type FavoriteItem = {
   id: number;
@@ -58,6 +59,8 @@ export default function FavoriteCompanies({
 
   // 모달 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   // 관심기업 추가 후 테이블 갱신
   const handleAdded = () => {
@@ -85,7 +88,7 @@ export default function FavoriteCompanies({
   });
 
   const handleDelete = async (id: number) => {
-    await axiosInstance.delete(`/favorites/${id}`, { data: { email } });
+    await axiosInstance.delete(`/favorites/${id}`, { params: { email } });
     queryClient.invalidateQueries({ queryKey: ["favorites"] });
   };
 
@@ -152,8 +155,15 @@ export default function FavoriteCompanies({
                   hour12: true,
                 })}
               </td>
+
+              {/* 휴지통 아이콘 개별 삭제 버튼 */}
               <td className="p-2 text-center">
-                <button onClick={() => handleDelete(item.id)}>
+                <button
+                  onClick={() => {
+                    setDeleteTargetId(item.id); // 삭제 대상 설정
+                    setIsDeleteModalOpen(true); // 모달 열기
+                  }}
+                >
                   <Trash className="text-gray-300 w-[20px] h-[20px]" />
                 </button>
               </td>
@@ -161,6 +171,28 @@ export default function FavoriteCompanies({
           ))}
         </tbody>
       </table>
+
+      {isDeleteModalOpen && deleteTargetId !== null && (
+        <DeleteModal
+          count={1}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={async () => {
+            if (deleteTargetId === null) return;
+            try {
+              await axiosInstance.delete(`/favorites/${deleteTargetId}`, {
+                params: { email },
+              });
+              queryClient.invalidateQueries({ queryKey: ["favorites", page] });
+              setIsDeleteModalOpen(false);
+              setDeleteTargetId(null);
+              alert("삭제 성공");
+            } catch (err) {
+              console.error(err);
+              alert("삭제 실패");
+            }
+          }}
+        />
+      )}
 
       {/* (전체 회사 목록) 관심 기업 생성 모달 */}
       {companiesData && (
