@@ -40,7 +40,7 @@ type FavoriteCompaniesProps = {
   setIsCompanyListModalOpen: (open: boolean) => void;
 };
 
-const email = "test@example.com";
+const email = process.env.NEXT_PUBLIC_USER_EMAIL || "";
 
 export default function FavoriteCompanies({
   isCompanyListModalOpen,

@@ -12,7 +12,8 @@ import { useQueryClient } from "@tanstack/react-query";
 const Main: React.FC = () => {
   const { selectedTask } = useTaskStore();
   const { selectedIds } = useFavoriteStore();
-  const email = "test@example.com";
+
+  const email = process.env.NEXT_PUBLIC_USER_EMAIL || "";
 
   // ✅ 모달 상태를 Main에서 관리
   const [isCompanyListModalOpen, setIsCompanyListModalOpen] = useState(false);
