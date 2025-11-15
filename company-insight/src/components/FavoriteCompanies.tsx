@@ -87,9 +87,22 @@ export default function FavoriteCompanies({
     },
   });
 
-  const handleDelete = async (id: number) => {
-    await axiosInstance.delete(`/favorites/${id}`, { params: { email } });
-    queryClient.invalidateQueries({ queryKey: ["favorites"] });
+  // 페이지네이션 계산
+  const getPageNumbers = () => {
+    if (!favoritesData) return [];
+    const total = favoritesData.total_pages;
+    const maxVisible = 8; // 최대 표시 페이지 수
+    const pages = [];
+
+    if (total <= maxVisible) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+    } else {
+      const left = Math.min(page, total - maxVisible + 1);
+      for (let i = left; i < left + maxVisible; i++) pages.push(i);
+      if (pages[pages.length - 1] < total) pages.push("...");
+      pages.push(total);
+    }
+    return pages;
   };
 
   return (
@@ -172,16 +185,37 @@ export default function FavoriteCompanies({
         </tbody>
       </table>
 
+      {/* DeleteModal 호출 부분 */}
+
       {isDeleteModalOpen && deleteTargetId !== null && (
         <DeleteModal
-          count={1}
-          onClose={() => setIsDeleteModalOpen(false)}
+          count={deleteTargetId ? 1 : selectedIds.length} // 개별 삭제면 1, 다중 선택 삭제면 selectedIds.length
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setDeleteTargetId(null);
+          }}
           onConfirm={async () => {
-            if (deleteTargetId === null) return;
             try {
-              await axiosInstance.delete(`/favorites/${deleteTargetId}`, {
-                params: { email },
-              });
+              if (deleteTargetId !== null) {
+                // ✅ 개별 삭제
+                await axiosInstance.delete(`/favorites/${deleteTargetId}`, {
+                  params: { email },
+                });
+                // ✅ 선택 목록에서 제거
+                toggleSelectedId(deleteTargetId);
+              } else if (selectedIds.length > 0) {
+                // ✅ 여러개 삭제
+                await Promise.all(
+                  selectedIds.map((id) =>
+                    axiosInstance.delete(`/favorites/${id}`, {
+                      params: { email },
+                    })
+                  )
+                );
+                // ✅ 삭제 후 선택 초기화
+                selectedIds.splice(0, selectedIds.length);
+              }
+
               queryClient.invalidateQueries({ queryKey: ["favorites", page] });
               setIsDeleteModalOpen(false);
               setDeleteTargetId(null);
@@ -193,7 +227,6 @@ export default function FavoriteCompanies({
           }}
         />
       )}
-
       {/* (전체 회사 목록) 관심 기업 생성 모달 */}
       {companiesData && (
         <FavoriteCompanyModal
@@ -204,7 +237,6 @@ export default function FavoriteCompanies({
           onAdded={handleAdded}
         />
       )}
-
       {/* 회사 상세 모달 */}
       {selectedDetailCompany && (
         <DetailModal
@@ -215,6 +247,44 @@ export default function FavoriteCompanies({
             queryClient.invalidateQueries({ queryKey: ["favorites", page] })
           }
         />
+      )}
+      {/* 페이지네이션 */}
+      {favoritesData && favoritesData.total_pages > 1 && (
+        <div className="flex justify-center gap-2 mt-4">
+          <button
+            className="px-3 py-1 border rounded disabled:opacity-50"
+            disabled={page === 1}
+            onClick={() => setPage((prev) => prev - 1)}
+          >
+            &lt; 이전
+          </button>
+
+          {getPageNumbers().map((p, idx) =>
+            p === "..." ? (
+              <span key={idx} className="px-2 py-1">
+                ...
+              </span>
+            ) : (
+              <button
+                key={p}
+                className={`px-3 py-1 border rounded ${
+                  p === page ? "bg-black text-white" : ""
+                }`}
+                onClick={() => setPage(Number(p))}
+              >
+                {p}
+              </button>
+            )
+          )}
+
+          <button
+            className="px-3 py-1 border rounded disabled:opacity-50"
+            disabled={page === favoritesData?.total_pages}
+            onClick={() => setPage((prev) => prev + 1)}
+          >
+            다음 &gt;
+          </button>
+        </div>
       )}
     </div>
   );
