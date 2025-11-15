@@ -6,9 +6,6 @@ export default function Home() {
     <div className="overflow-x-auto">
       <div className="w-full h-[1200px]">
         <Header />
-      </div>
-
-      <div className="w-full h-[1200px]">
         <Main />
       </div>
     </div>
