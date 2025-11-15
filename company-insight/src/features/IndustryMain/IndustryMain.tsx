@@ -1,5 +1,6 @@
 // IndustryMain.tsx
 "use client";
+import DartPage from "@/components/IndustrySelect/DartPage";
 
 const IndustryMain: React.FC = () => {
   return (
@@ -13,6 +14,9 @@ const IndustryMain: React.FC = () => {
           <div className="font-noto font-normal text-[14px] leading-[100%] tracking-[0] text-gray-500">
             기업명과 보고서 옵션을 선택하여 제무제표를 조회해보세요.
           </div>
+        </div>
+        <div>
+          <DartPage />
         </div>
       </div>
     </div>
