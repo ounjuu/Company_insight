@@ -70,7 +70,7 @@ export default function FavoriteCompanies() {
   if (companiesError || favoritesError) return <div>Error!</div>;
 
   return (
-    <div className="p-6">
+    <div>
       {/* 상단 메뉴 */}
       <div className="flex gap-4 mb-4 items-center">
         <select
@@ -115,7 +115,7 @@ export default function FavoriteCompanies() {
             </th>
             <th className="p-2 text-left">회사명</th>
             <th className="p-2 text-left">생성일자</th>
-            <th className="p-2 text-center">삭제</th>
+            <th className="p-2 text-center"></th>
           </tr>
         </thead>
         <tbody>
@@ -134,11 +134,18 @@ export default function FavoriteCompanies() {
                 </td>
                 <td className="p-2">{item.company_name}</td>
                 <td className="p-2">
-                  {new Date(item.created_at).toLocaleDateString()}
+                  {new Date(item.created_at).toLocaleString("ko-KR", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
                 </td>
                 <td className="p-2 text-center">
                   <button onClick={() => handleDelete(item.id)}>
-                    <Trash className="text-red-500" />
+                    <Trash className="text-gray-300 w-[20px] h-[20px]" />
                   </button>
                 </td>
               </tr>

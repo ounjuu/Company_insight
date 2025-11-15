@@ -2,6 +2,7 @@
 
 import { useTaskStore } from "@/store/taskStore";
 import FavoriteCompanies from "@/components/FavoriteCompanies";
+import { Trash } from "lucide-react";
 
 const Main: React.FC = () => {
   const { selectedTask, setSelectedTask } = useTaskStore();
@@ -12,14 +13,28 @@ const Main: React.FC = () => {
         {/* 글씨 중앙 배치 */}
         <div>
           {selectedTask === "general" && (
-            <div className="flex flex-col gap-[4px]">
-              <div className="text-[28px] leading-[38px] font-semibold [font-variant-numeric:tabular-nums] font-pretendard mt-2">
-                관심기업 관리 서비스
+            <div className="flex flex-col gap-6">
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-[4px]">
+                  <div className="text-[28px] leading-[38px] font-semibold [font-variant-numeric:tabular-nums] font-pretendard mt-2">
+                    관심기업 관리 서비스
+                  </div>
+                  <div className="font-noto font-normal text-[14px] leading-[100%] tracking-[0] text-gray-500">
+                    관심 기업을 등록하고 삭제하며 관리하세요.
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <button className="flex items-center justify-center w-[147px] h-[38px] rounded-[4px] px-4 py-2 gap-2 bg-black text-white  whitespace-nowrap">
+                    <span className="text-lg font-bold ">+</span>
+                    관심기업 생성
+                  </button>
+                  <button className="flex items-center justify-center w-[147px] h-[38px] rounded-[4px] px-4 py-2 gap-2 border border-[#3E3E3E] text-[#3E3E3E]  whitespace-nowrap">
+                    <Trash className="w-4 h-4" />
+                    관심기업 삭제
+                  </button>
+                </div>
               </div>
-              <div className="font-noto font-normal text-[14px] leading-[100%] tracking-[0] text-gray-500">
-                관심 기업을 등록하고 삭제하며 관리하세요.
-              </div>
-              <div>
+              <div className="w-full">
                 <FavoriteCompanies />
               </div>
             </div>
