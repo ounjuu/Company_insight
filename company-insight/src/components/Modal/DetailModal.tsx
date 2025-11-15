@@ -48,9 +48,10 @@ export default function DetailModal({
         { memo },
         { params: { email } }
       );
-      alert("수정 완료");
+      setData((prev) => prev && { ...prev, memo }); // 화면 즉시 업데이트
+      onUpdated(); // 테이블 갱신
       setIsEditing(false);
-      onUpdated();
+      alert("수정 성공");
     } catch (err) {
       console.error(err);
       alert("수정 실패");

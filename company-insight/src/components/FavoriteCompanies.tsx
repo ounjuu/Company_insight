@@ -180,7 +180,7 @@ export default function FavoriteCompanies({
           email={email}
           onClose={() => setSelectedDetailCompany(null)}
           onUpdated={() =>
-            queryClient.invalidateQueries({ queryKey: ["favorites"] })
+            queryClient.invalidateQueries({ queryKey: ["favorites", page] })
           }
         />
       )}
