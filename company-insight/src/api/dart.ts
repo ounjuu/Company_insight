@@ -29,7 +29,7 @@ export const fetchFinancialStatement = async ({
   if (!res.ok) throw new Error("Failed to fetch financial statement");
 
   const data = await res.json();
-
+  console.log(data, "data?");
   if (data.status !== "000") {
     console.error(data);
     throw new Error(data.message || "Error from DART API");

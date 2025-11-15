@@ -13,8 +13,7 @@ const useCompanyList = () => {
     queryKey: ["companies"],
     queryFn: async () => {
       const res = await axiosInstance.get("/companies");
-      console.log("companies from API:", res.data.companies); // 여기서 배열 확인
-      return res.data.companies; // [{corp_name, corp_code}, ...] 형태
+      return res.data.companies;
     },
   });
 };

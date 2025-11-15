@@ -40,14 +40,15 @@ export default function DartPage() {
     setCompanyName(value);
     setShowDropdown(true);
 
-    const filtered = companyList
-      .filter((c) => c.corp_name) // 존재 확인
-      .filter((c) => c.corp_name.toLowerCase().includes(value.toLowerCase()));
+    const filtered = companyList.filter((name: any) =>
+      name.toLowerCase().includes(value.toLowerCase())
+    );
+
     setFilteredCompanies(filtered);
   };
 
-  const handleSelectCompany = (name: string) => {
-    setCompanyName(name);
+  const handleSelectCompany = (selected: string) => {
+    setCompanyName(selected); // 문자열 그대로
     setShowDropdown(false);
   };
 
@@ -61,7 +62,7 @@ export default function DartPage() {
     try {
       // 회사명 → corp_code
       const corpCode = await fetchCompanyCode(companyName);
-
+      console.log(corpCode, "corpCode??");
       const data = await fetchFinancialStatement({
         corpCode,
         year,
