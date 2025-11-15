@@ -1,6 +1,7 @@
 "use client";
 
 import { useTaskStore } from "@/store/taskStore";
+import FavoriteCompanies from "@/components/FavoriteCompanies";
 
 const Main: React.FC = () => {
   const { selectedTask, setSelectedTask } = useTaskStore();
@@ -17,6 +18,9 @@ const Main: React.FC = () => {
               </div>
               <div className="font-noto font-normal text-[14px] leading-[100%] tracking-[0] text-gray-500">
                 관심 기업을 등록하고 삭제하며 관리하세요.
+              </div>
+              <div>
+                <FavoriteCompanies />
               </div>
             </div>
           )}

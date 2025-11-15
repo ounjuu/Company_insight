@@ -1,6 +1,8 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import FavoriteQueryProvider from "@/components/FavoriteQueryProvider"; // Client Component
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -20,15 +22,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* Client Component로 QueryClientProvider 분리 */}
+        <FavoriteQueryProvider>{children}</FavoriteQueryProvider>
       </body>
     </html>
   );
