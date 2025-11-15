@@ -108,7 +108,7 @@ const Main: React.FC = () => {
 
           {/* 산업 관련 */}
 
-          {selectedTask === "industry" && (
+          {/* {selectedTask === "industry" && (
             <div className="flex flex-col gap-[4px]">
               <div className="text-[28px] leading-[38px] font-semibold [font-variant-numeric:tabular-nums] font-pretendard mt-2">
                 기업 재무제표 조회
@@ -117,7 +117,7 @@ const Main: React.FC = () => {
                 기업명과 보고서 옵션을 선택하여 제무제표를 조회해보세요.
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
