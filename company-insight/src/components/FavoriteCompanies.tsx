@@ -7,6 +7,10 @@ import axiosInstance from "@/lib/axiosInstance";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import { Trash } from "lucide-react";
 
+// 모달
+import FavoriteCompanyModal from "./Modal/FavoriteCompanyModal";
+import DetailModal from "./Modal/DetailModal";
+
 type FavoriteItem = {
   id: number;
   company_name: string;
@@ -25,6 +29,11 @@ type CompaniesResponse = {
   companies: string[];
 };
 
+type SelectedDetailCompany = {
+  id: number;
+  company_name: string;
+};
+
 // ✅ 모달 상태를 prop으로 받음
 type FavoriteCompaniesProps = {
   isCompanyListModalOpen: boolean;
@@ -41,9 +50,19 @@ export default function FavoriteCompanies({
   const { selectedCompany, setSelectedCompany, selectedIds, toggleSelectedId } =
     useFavoriteStore();
   const [page, setPage] = useState(1);
-  const [selectedDetailCompany, setSelectedDetailCompany] = useState<
-    string | null
-  >(null);
+
+  const [selectedDetailCompany, setSelectedDetailCompany] =
+    useState<SelectedDetailCompany | null>(null);
+
+  const [searchText, setSearchText] = useState("");
+
+  // 모달 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 관심기업 추가 후 테이블 갱신
+  const handleAdded = () => {
+    queryClient.invalidateQueries({ queryKey: ["favorites"] });
+  };
 
   // 전체 회사명 가져오기
   const { data: companiesData } = useQuery<CompaniesResponse, Error>({
@@ -114,7 +133,12 @@ export default function FavoriteCompanies({
               </td>
               <td
                 className="p-2 cursor-pointer text-blue-600"
-                onClick={() => setSelectedDetailCompany(item.company_name)}
+                onClick={() =>
+                  setSelectedDetailCompany({
+                    id: item.id,
+                    company_name: item.company_name,
+                  })
+                }
               >
                 {item.company_name}
               </td>
@@ -138,55 +162,27 @@ export default function FavoriteCompanies({
         </tbody>
       </table>
 
-      {/* 전체 회사 목록 모달 */}
-      {isCompanyListModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white w-96 max-h-[70vh] overflow-y-auto rounded p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold">전체 회사</h2>
-              <button
-                className="text-gray-500 font-bold text-xl"
-                onClick={() => setIsCompanyListModalOpen(false)}
-              >
-                ×
-              </button>
-            </div>
-            <ul className="space-y-2">
-              {companiesData?.companies.map((name, idx) => (
-                <li
-                  key={name + idx}
-                  className="p-2 rounded cursor-pointer hover:bg-gray-100"
-                  onClick={() => {
-                    setSelectedCompany(name);
-                    setIsCompanyListModalOpen(false);
-                  }}
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+      {/* (전체 회사 목록) 관심 기업 생성 모달 */}
+      {companiesData && (
+        <FavoriteCompanyModal
+          isOpen={isCompanyListModalOpen} // ✅ Main에서 내려준 prop 사용
+          onClose={() => setIsCompanyListModalOpen(false)} // ✅ Main에서 내려준 setter 사용
+          companies={companiesData.companies}
+          email={email}
+          onAdded={handleAdded}
+        />
       )}
 
       {/* 회사 상세 모달 */}
       {selectedDetailCompany && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white w-96 rounded p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold">
-                {selectedDetailCompany} 상세
-              </h2>
-              <button
-                className="text-gray-500 font-bold text-xl"
-                onClick={() => setSelectedDetailCompany(null)}
-              >
-                ×
-              </button>
-            </div>
-            <p>여기에 {selectedDetailCompany}에 대한 상세 정보를 표시합니다.</p>
-          </div>
-        </div>
+        <DetailModal
+          companyId={selectedDetailCompany.id} // 선택한 회사 id
+          email={email}
+          onClose={() => setSelectedDetailCompany(null)}
+          onUpdated={() =>
+            queryClient.invalidateQueries({ queryKey: ["favorites"] })
+          }
+        />
       )}
     </div>
   );
