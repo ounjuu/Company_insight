@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axiosInstance";
+import { Edit } from "lucide-react";
 
 type DetailModalProps = {
   companyId: number;
@@ -61,54 +62,65 @@ export default function DetailModal({
   if (!data) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
-      <div className="bg-white w-1/2 h-full p-6 overflow-y-auto relative">
-        <button
-          className="absolute top-4 right-4 text-gray-500 text-xl font-bold"
-          onClick={onClose}
-        >
-          ×
-        </button>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white w-1/2 h-full relative flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 모달 헤더 */}
+        <h2 className="text-2xl font-bold h-[60px] px-[20px] border-b border-gray-300 flex items-center justify-center">
+          {data.company_name}
+        </h2>
 
-        <h2 className="text-2xl font-bold mb-4">{data.company_name}</h2>
-
-        {!isEditing ? (
-          <div>
-            <p className="whitespace-pre-line mb-4">{data.memo}</p>
-            <button
-              className="px-4 py-2 bg-blue-600 text-white rounded"
-              onClick={() => setIsEditing(true)}
-            >
-              수정하기
-            </button>
-          </div>
-        ) : (
-          <div>
-            <textarea
-              className="w-full border rounded p-2 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={6}
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-            />
-            <div className="flex gap-2">
-              <button
-                className="px-4 py-2 border rounded"
-                onClick={() => {
-                  setMemo(data.memo); // 원래 값 복원
-                  setIsEditing(false);
-                }}
-              >
-                취소
-              </button>
-              <button
-                className="px-4 py-2 bg-green-600 text-white rounded"
-                onClick={handleSave}
-              >
-                저장
-              </button>
-            </div>
-          </div>
-        )}
+        {/* 모달 본문 */}
+        <div className="flex-1 p-4 flex flex-col">
+          {!isEditing ? (
+            <>
+              <textarea
+                readOnly
+                className="w-full flex-1 border rounded p-2 resize-none bg-gray-50"
+                value={data.memo}
+              />
+              <div className="flex justify-end mt-2 whitespace-nowrap">
+                <button
+                  className="px-4 py-2 bg-black text-white rounded flex justify-center items-center"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Edit className="w-4 h-4 pr-1" />
+                  수정하기
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <textarea
+                className="w-full flex-1 border rounded p-2 resize-none focus:outline-none focus:ring-2 focus:ring-gray-500 text-base"
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+              />
+              <div className="flex justify-end gap-2 mt-2">
+                <button
+                  className="px-4 py-2 border rounded"
+                  onClick={() => {
+                    setMemo(data.memo);
+                    setIsEditing(false);
+                  }}
+                >
+                  취소하기
+                </button>
+                <button
+                  className="px-4 py-2 bg-black text-white rounded"
+                  onClick={handleSave}
+                >
+                  저장하기
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
