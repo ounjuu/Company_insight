@@ -79,10 +79,10 @@ export default function DartPage() {
   if (isLoading) return <p>회사 목록 불러오는 중...</p>;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className=" w-full pt-[24px] space-y-6">
       {/* 기업명 */}
       <div ref={wrapperRef} className="relative">
-        <label>기업명 (required)</label>
+        <label>기업명</label>
         <input
           className="border p-2 rounded w-full mt-1"
           placeholder="회사명 검색"
@@ -106,7 +106,7 @@ export default function DartPage() {
 
       {/* 사업연도 */}
       <div>
-        <label>사업연도 (required)</label>
+        <label>사업연도</label>
         <select
           className="border p-2 rounded w-full mt-1"
           value={year}
@@ -123,7 +123,7 @@ export default function DartPage() {
 
       {/* 보고서명 */}
       <div>
-        <label>보고서명 (required)</label>
+        <label>보고서명</label>
         <select
           className="border p-2 rounded w-full mt-1"
           value={report}
@@ -140,7 +140,7 @@ export default function DartPage() {
 
       {/* 재무제표 */}
       <div>
-        <label>재무제표 종류 (required)</label>
+        <label>재무제표 종류</label>
         <select
           className="border p-2 rounded w-full mt-1"
           value={fsDiv}
@@ -157,7 +157,7 @@ export default function DartPage() {
 
       <button
         onClick={handleSubmit}
-        className="bg-blue-600 text-white p-2 rounded w-full"
+        className="bg-black text-white p-2 rounded w-full"
       >
         조회하기
       </button>
