@@ -242,13 +242,14 @@ export default function FavoriteCompanies({
         />
       )}
       {/* (전체 회사 목록) 관심 기업 생성 모달 */}
-      {companiesData && (
+      {companiesData && favoritesData && (
         <FavoriteCompanyModal
           isOpen={isCompanyListModalOpen} // ✅ Main에서 내려준 prop 사용
           onClose={() => setIsCompanyListModalOpen(false)} // ✅ Main에서 내려준 setter 사용
           companies={companiesData.companies}
           email={email}
           onAdded={handleAdded}
+          favorites={favoritesData.items.map((f) => f.company_name)}
         />
       )}
       {/* 회사 상세 모달 */}

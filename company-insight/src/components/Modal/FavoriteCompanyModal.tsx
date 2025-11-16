@@ -8,7 +8,8 @@ type FavoriteCompanyModalProps = {
   onClose: () => void;
   companies: string[];
   email: string;
-  onAdded: () => void; // 관심기업 추가 후 테이블 갱신
+  onAdded: () => void;
+  favorites: string[]; // 이미 등록된 관심기업 리스트 추가
 };
 
 export default function FavoriteCompanyModal({
@@ -17,6 +18,7 @@ export default function FavoriteCompanyModal({
   companies,
   email,
   onAdded,
+  favorites,
 }: FavoriteCompanyModalProps) {
   const [searchText, setSearchText] = useState("");
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
@@ -33,6 +35,11 @@ export default function FavoriteCompanyModal({
       // textarea가 비어있으면
       alert("메모를 입력해주세요.");
       return;
+    }
+
+    // ✅ 이미 등록된 회사인지 체크
+    if (favorites.includes(selectedCompany)) {
+      return alert("이미 등록된 회사입니다.");
     }
 
     setIsSubmitting(true);
@@ -80,7 +87,7 @@ export default function FavoriteCompanyModal({
               setSearchText(e.target.value);
               setSelectedCompany(null); // 입력 시작하면 선택 초기화
             }}
-            className="w-full border rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-black-500"
           />
 
           {/* 드롭다운: searchText가 있고 selectedCompany와 다를 때만 표시 */}
