@@ -25,6 +25,8 @@ export default function FavoriteCompanyModal({
   const [memo, setMemo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  if (!isOpen || !companies) return null;
+
   const filteredCompanies = companies.filter((name) =>
     name.toLowerCase().includes(searchText.toLowerCase())
   );
