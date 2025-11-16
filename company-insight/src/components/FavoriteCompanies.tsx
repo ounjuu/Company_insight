@@ -48,17 +48,13 @@ export default function FavoriteCompanies({
   setIsCompanyListModalOpen,
 }: FavoriteCompaniesProps) {
   const queryClient = useQueryClient();
-  const { selectedCompany, setSelectedCompany, selectedIds, toggleSelectedId } =
-    useFavoriteStore();
+  const { selectedIds, toggleSelectedId } = useFavoriteStore();
   const [page, setPage] = useState(1);
 
   const [selectedDetailCompany, setSelectedDetailCompany] =
     useState<SelectedDetailCompany | null>(null);
 
-  const [searchText, setSearchText] = useState("");
-
   // 모달 상태
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
@@ -107,10 +103,10 @@ export default function FavoriteCompanies({
 
   return (
     <div>
-      <table className="w-full border border-gray-300">
+      <table className="w-full border border-gray-300 table-fixed">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-2 text-center">
+            <th className="p-2 text-center w-[5%]">
               <input
                 type="checkbox"
                 checked={
@@ -130,25 +126,35 @@ export default function FavoriteCompanies({
                     });
                   }
                 }}
+                className="cursor-pointer"
               />
             </th>
-            <th className="p-2 text-left">회사명</th>
-            <th className="p-2 text-left">생성일자</th>
-            <th className="p-2 text-center"></th>
+            <th className="p-2 text-left w-[60%]">회사명</th>
+
+            <th className="p-2 text-left w-[20%]">생성일자</th>
+
+            <th className="p-2 text-center w-[5%]"></th>
           </tr>
         </thead>
         <tbody>
           {favoritesData?.items.map((item) => (
-            <tr key={item.id} className="border-t">
-              <td className="p-2 text-center">
+            <tr
+              key={item.id}
+              className={`
+    border-t 
+    ${selectedIds.includes(item.id) ? "bg-yellow-50" : ""}
+  `}
+            >
+              <td className="p-2 cursor-pointer text-center">
                 <input
                   type="checkbox"
                   checked={selectedIds.includes(item.id)}
                   onChange={() => toggleSelectedId(item.id)}
+                  className="cursor-pointer"
                 />
               </td>
               <td
-                className="p-2 cursor-pointer text-blue-600"
+                className="p-2 cursor-pointer text-black"
                 onClick={() =>
                   setSelectedDetailCompany({
                     id: item.id,
@@ -158,7 +164,15 @@ export default function FavoriteCompanies({
               >
                 {item.company_name}
               </td>
-              <td className="p-2">
+              <td
+                className="p-2 cursor-pointer text-black"
+                onClick={() =>
+                  setSelectedDetailCompany({
+                    id: item.id,
+                    company_name: item.company_name,
+                  })
+                }
+              >
                 {new Date(item.created_at).toLocaleString("ko-KR", {
                   year: "numeric",
                   month: "2-digit",
