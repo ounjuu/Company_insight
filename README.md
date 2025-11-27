@@ -63,7 +63,6 @@
 
 3. 환경변수 설정
 - company-insight 폴더 안에 .env.local 생성
-- 메일로 전달받은 환경변수 내용을 붙여넣고 저장
 
 4. 개발 서버 실행
 - npm run dev
